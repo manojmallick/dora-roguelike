@@ -1,9 +1,11 @@
 import { AudioCache } from "./audio/audioCache";
 import { getAudioManifest } from "./audio/elevenlabs";
-import { COLORS, DEBUG_SKIP_AUDIO, DEV_MODE, GAME_TITLE, TOTAL_ROUNDS } from "./config";
+import { COLORS, DEBUG_SKIP_AUDIO, DEV_MODE, GAME_TITLE, INDICATORS, TOTAL_ROUNDS } from "./config";
+import { ComplianceBoard } from "./game/ComplianceBoard";
 import { GameState, type Phase } from "./game/GameState";
 import { renderLoadingScene } from "./scenes/LoadingScene";
 import { renderMenuScene } from "./scenes/MenuScene";
+import { renderComplianceBoard } from "./ui/BoardRenderer";
 
 const canvas = document.querySelector<HTMLCanvasElement>("#game");
 
@@ -19,6 +21,7 @@ if (!context) {
 
 const gameState = new GameState("LOADING");
 const audioCache = new AudioCache(getAudioManifest(), { skipAudio: DEBUG_SKIP_AUDIO });
+const complianceBoard = new ComplianceBoard();
 
 let lastFrameTime = performance.now();
 let devicePixelRatioCache = window.devicePixelRatio || 1;
@@ -69,6 +72,12 @@ const render = (): void => {
 
   if (phase === "MENU") {
     renderMenuScene(context, width, height);
+    renderComplianceBoard(context, complianceBoard.getAll(), {
+      x: Math.max(16, width * 0.08),
+      y: height * 0.66,
+      width: Math.min(560, width - 32),
+      now: performance.now()
+    });
     return;
   }
 
@@ -158,6 +167,20 @@ if (DEV_MODE) {
 
     if (event.key.toLowerCase() === "s") {
       audioCache.play("sfx_card_play");
+    }
+
+    const damageKeyIndex = ["q", "w", "e", "r", "t"].indexOf(event.key.toLowerCase());
+    if (damageKeyIndex >= 0) {
+      complianceBoard.damage(INDICATORS[damageKeyIndex], 25);
+    }
+
+    if (event.key.toLowerCase() === "a") {
+      const lowest = complianceBoard.getLowest();
+      complianceBoard.restore(lowest.id, 20);
+    }
+
+    if (complianceBoard.isFailed()) {
+      gameState.setPhase("DEFEAT");
     }
   });
 }
