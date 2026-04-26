@@ -7,12 +7,15 @@ import { GameState, type Phase } from "./game/GameState";
 import { RegulatorAI, type Attack } from "./game/RegulatorAI";
 import { TurnTimer } from "./game/TurnTimer";
 import { renderBossIntroScene } from "./scenes/BossScene";
+import { renderDefeatScene } from "./scenes/DefeatScene";
 import { renderGameScene } from "./scenes/GameScene";
 import { renderLoadingScene } from "./scenes/LoadingScene";
 import { renderMenuScene } from "./scenes/MenuScene";
+import { renderVictoryScene } from "./scenes/VictoryScene";
 import { renderComplianceBoard } from "./ui/BoardRenderer";
 import { getCardAt, renderCards, type CardHitBox } from "./ui/CardRenderer";
 import { renderTurnTimer } from "./ui/HUD";
+import { renderRegulator } from "./ui/RegulatorRenderer";
 
 const canvas = document.querySelector<HTMLCanvasElement>("#game");
 
@@ -181,6 +184,7 @@ const render = (): void => {
 
   if ((phase === "PLAYER_TURN" || phase === "BOSS_TURN") && currentAttack) {
     renderGameScene(context, width, currentAttack, currentReaction);
+    renderRegulator(context, width - 112, 190, currentAttack.voice, true, performance.now());
     renderTurnTimer(context, width, turnTimer.getRemainingSeconds());
     renderComplianceBoard(context, complianceBoard.getAll(), {
       x: Math.max(16, width * 0.08),
@@ -199,14 +203,11 @@ const render = (): void => {
   }
 
   if (phase === "VICTORY" || phase === "DEFEAT") {
-    drawCenteredText(
-      phase === "VICTORY"
-        ? "You have survived the audit. You will not be fined... this quarter."
-        : "EUR 10,000,000. The fine has been calculated.",
-      height * 0.48,
-      width < 520 ? 20 : 28,
-      phase === "VICTORY" ? COLORS.safeGreen : COLORS.dangerRed
-    );
+    if (phase === "VICTORY") {
+      renderVictoryScene(context, width, height);
+    } else {
+      renderDefeatScene(context, width, height);
+    }
     return;
   }
 
