@@ -1,5 +1,9 @@
-import { COLORS, DEV_MODE, GAME_TITLE, TOTAL_ROUNDS } from "./config";
+import { AudioCache } from "./audio/audioCache";
+import { getAudioManifest } from "./audio/elevenlabs";
+import { COLORS, DEBUG_SKIP_AUDIO, DEV_MODE, GAME_TITLE, TOTAL_ROUNDS } from "./config";
 import { GameState, type Phase } from "./game/GameState";
+import { renderLoadingScene } from "./scenes/LoadingScene";
+import { renderMenuScene } from "./scenes/MenuScene";
 
 const canvas = document.querySelector<HTMLCanvasElement>("#game");
 
@@ -14,6 +18,7 @@ if (!context) {
 }
 
 const gameState = new GameState("LOADING");
+const audioCache = new AudioCache(getAudioManifest(), { skipAudio: DEBUG_SKIP_AUDIO });
 
 let lastFrameTime = performance.now();
 let devicePixelRatioCache = window.devicePixelRatio || 1;
@@ -56,6 +61,16 @@ const render = (): void => {
   const width = window.innerWidth;
   const height = window.innerHeight;
   const phase = gameState.getPhase();
+
+  if (phase === "LOADING" || phase === "TAP_TO_START") {
+    renderLoadingScene(context, width, height, gameState.getLoadingProgress(), phase === "TAP_TO_START");
+    return;
+  }
+
+  if (phase === "MENU") {
+    renderMenuScene(context, width, height);
+    return;
+  }
 
   context.fillStyle = COLORS.background;
   context.fillRect(0, 0, width, height);
@@ -103,6 +118,16 @@ const loop = (frameTime: number): void => {
 };
 
 window.addEventListener("resize", resizeCanvas);
+canvas.addEventListener("click", () => {
+  if (gameState.getPhase() !== "TAP_TO_START") {
+    return;
+  }
+
+  void audioCache.unlock().then(() => {
+    gameState.setPhase("MENU");
+    audioCache.play("music_menu");
+  });
+});
 
 if (DEV_MODE) {
   window.addEventListener("keydown", (event) => {
@@ -122,8 +147,27 @@ if (DEV_MODE) {
     if (nextPhase) {
       gameState.setPhase(nextPhase);
     }
+
+    if (event.key.toLowerCase() === "d") {
+      audioCache.play("dialogue_test");
+    }
+
+    if (event.key.toLowerCase() === "m") {
+      audioCache.play("music_menu");
+    }
+
+    if (event.key.toLowerCase() === "s") {
+      audioCache.play("sfx_card_play");
+    }
   });
 }
 
 resizeCanvas();
+void audioCache.load((loaded, total) => {
+  gameState.setLoadingProgress(loaded / total);
+
+  if (loaded === total) {
+    gameState.setPhase("TAP_TO_START");
+  }
+});
 requestAnimationFrame(loop);

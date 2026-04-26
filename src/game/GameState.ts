@@ -12,6 +12,7 @@ export type Phase =
 export class GameState {
   private phase: Phase;
   private elapsedSeconds = 0;
+  private loadingProgress = 0;
 
   constructor(initialPhase: Phase = "LOADING") {
     this.phase = initialPhase;
@@ -32,5 +33,13 @@ export class GameState {
 
   getElapsedSeconds(): number {
     return this.elapsedSeconds;
+  }
+
+  setLoadingProgress(progress: number): void {
+    this.loadingProgress = Math.min(1, Math.max(0, progress));
+  }
+
+  getLoadingProgress(): number {
+    return this.loadingProgress;
   }
 }
