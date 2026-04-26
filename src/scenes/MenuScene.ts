@@ -20,5 +20,5 @@ export const renderMenuScene = (
 
   context.fillStyle = COLORS.muted;
   context.font = "14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
-  context.fillText("Dev keys: D dialogue, M music, S sfx", width / 2, height * 0.58, Math.max(260, width - 48));
+  context.fillText("Tap anywhere outside a card to start Round 1.", width / 2, height * 0.56, Math.max(260, width - 48));
 };
