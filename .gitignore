@@ -11,3 +11,4 @@ apps/web/.env.local
 .agents/
 .agents/*
 AGENTS.md
+.vercel
