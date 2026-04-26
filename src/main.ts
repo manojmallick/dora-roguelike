@@ -1,5 +1,6 @@
 import { AudioCache } from "./audio/audioCache";
 import { getAudioManifest } from "./audio/elevenlabs";
+import { selectMusicTrack, type MusicTrackId } from "./audio/MusicDirector";
 import { CARD_TIMER_SECONDS, COLORS, DEBUG_SKIP_AUDIO, DEV_MODE, GAME_TITLE, INDICATORS, TOTAL_ROUNDS } from "./config";
 import { CardDeck } from "./game/CardDeck";
 import { ComplianceBoard, type Indicator } from "./game/ComplianceBoard";
@@ -44,6 +45,27 @@ let cardHitBoxes: CardHitBox[] = [];
 let currentRound = 0;
 let currentAttack: Attack | undefined;
 let currentReaction = "";
+let currentMusic: MusicTrackId | undefined;
+
+const updateMusic = (): void => {
+  const nextMusic = selectMusicTrack(
+    gameState.getPhase(),
+    complianceBoard.getLowest().value,
+    currentAttack ? regulatorAI.isBossRound(currentAttack.round) : false
+  );
+
+  if (!nextMusic || nextMusic === currentMusic) {
+    return;
+  }
+
+  if (currentMusic) {
+    audioCache.crossfade(currentMusic, nextMusic, 650);
+  } else {
+    audioCache.play(nextMusic);
+  }
+
+  currentMusic = nextMusic;
+};
 
 const startRound = (round: number): void => {
   currentRound = round;
@@ -51,16 +73,22 @@ const startRound = (round: number): void => {
   currentReaction = "";
   turnTimer.start();
   gameState.setPhase(regulatorAI.isBossRound(round) ? "BOSS_TURN" : "PLAYER_TURN");
+
+  if (round === 11) {
+    audioCache.play("sfx_boss_entrance");
+  }
 };
 
 const advanceRound = (): void => {
   if (complianceBoard.isFailed()) {
     gameState.setPhase("DEFEAT");
+    audioCache.play("music_defeat");
     return;
   }
 
   if (currentRound >= regulatorAI.getTotalRounds()) {
     gameState.setPhase("VICTORY");
+    audioCache.play("music_victory");
     return;
   }
 
@@ -106,6 +134,9 @@ const resolveRound = (cardId?: string): void => {
       indicator,
       amount: currentAttack?.damage ?? 0
     })));
+    audioCache.play(complianceBoard.getLowest().value < 30 ? "sfx_critical_damage" : "sfx_damage");
+  } else {
+    audioCache.play("sfx_card_block");
   }
 
   currentReaction = regulatorAI.getReaction(blocked);
@@ -250,6 +281,8 @@ const update = (deltaSeconds: number): void => {
       resolveRound();
     }
   }
+
+  updateMusic();
 };
 
 const loop = (frameTime: number): void => {
