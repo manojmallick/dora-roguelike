@@ -1,6 +1,7 @@
 export const GAME_TITLE = "DORA: The Compliance Roguelike";
 export const TOTAL_ROUNDS = 15;
 export const DEV_MODE = import.meta.env.DEV;
+export const DEBUG_SKIP_AUDIO = import.meta.env.VITE_DEBUG_SKIP_AUDIO !== "false";
 
 export const COLORS = {
   background: "#0d0d1a",
