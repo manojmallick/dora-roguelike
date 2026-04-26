@@ -2,8 +2,11 @@ import { AudioCache } from "./audio/audioCache";
 import { getAudioManifest } from "./audio/elevenlabs";
 import { COLORS, DEBUG_SKIP_AUDIO, DEV_MODE, GAME_TITLE, INDICATORS, TOTAL_ROUNDS } from "./config";
 import { CardDeck } from "./game/CardDeck";
-import { ComplianceBoard } from "./game/ComplianceBoard";
+import { ComplianceBoard, type Indicator } from "./game/ComplianceBoard";
 import { GameState, type Phase } from "./game/GameState";
+import { RegulatorAI, type Attack } from "./game/RegulatorAI";
+import { renderBossIntroScene } from "./scenes/BossScene";
+import { renderGameScene } from "./scenes/GameScene";
 import { renderLoadingScene } from "./scenes/LoadingScene";
 import { renderMenuScene } from "./scenes/MenuScene";
 import { renderComplianceBoard } from "./ui/BoardRenderer";
@@ -25,12 +28,56 @@ const gameState = new GameState("LOADING");
 const audioCache = new AudioCache(getAudioManifest(), { skipAudio: DEBUG_SKIP_AUDIO });
 const complianceBoard = new ComplianceBoard();
 const cardDeck = new CardDeck();
+const regulatorAI = new RegulatorAI();
 cardDeck.draw(5);
 
 let lastFrameTime = performance.now();
 let devicePixelRatioCache = window.devicePixelRatio || 1;
 let pointer = { x: -1, y: -1 };
 let cardHitBoxes: CardHitBox[] = [];
+let currentRound = 0;
+let currentAttack: Attack | undefined;
+let currentReaction = "";
+
+const startRound = (round: number): void => {
+  currentRound = round;
+  currentAttack = regulatorAI.getAttack(round);
+  currentReaction = "";
+  gameState.setPhase(regulatorAI.isBossRound(round) ? "BOSS_TURN" : "PLAYER_TURN");
+};
+
+const advanceRound = (): void => {
+  if (complianceBoard.isFailed()) {
+    gameState.setPhase("DEFEAT");
+    return;
+  }
+
+  if (currentRound >= regulatorAI.getTotalRounds()) {
+    gameState.setPhase("VICTORY");
+    return;
+  }
+
+  startRound(currentRound + 1);
+};
+
+const restoreTargets = (target: Indicator | "all" | "incidents-testing" | "none", amount: number): void => {
+  if (target === "none") {
+    return;
+  }
+
+  if (target === "all") {
+    complianceBoard.restore(complianceBoard.getLowest().id, amount);
+    return;
+  }
+
+  if (target === "incidents-testing") {
+    complianceBoard.restore("incidents", amount);
+    complianceBoard.restore("testing", amount);
+    return;
+  }
+
+  complianceBoard.restore(target, amount);
+};
 
 const resizeCanvas = (): void => {
   devicePixelRatioCache = window.devicePixelRatio || 1;
@@ -94,8 +141,43 @@ const render = (): void => {
     return;
   }
 
+  if (phase === "BOSS_INTRO") {
+    renderBossIntroScene(context, width, height);
+    return;
+  }
+
   context.fillStyle = COLORS.background;
   context.fillRect(0, 0, width, height);
+
+  if ((phase === "PLAYER_TURN" || phase === "BOSS_TURN") && currentAttack) {
+    renderGameScene(context, width, currentAttack, currentReaction);
+    renderComplianceBoard(context, complianceBoard.getAll(), {
+      x: Math.max(16, width * 0.08),
+      y: 210,
+      width: Math.min(560, width - 32),
+      now: performance.now()
+    });
+    cardHitBoxes = renderCards(context, cardDeck.getHand(), {
+      x: 16,
+      y: Math.max(height - 156, height * 0.76),
+      width: width - 32,
+      height: 136,
+      pointer
+    });
+    return;
+  }
+
+  if (phase === "VICTORY" || phase === "DEFEAT") {
+    drawCenteredText(
+      phase === "VICTORY"
+        ? "You have survived the audit. You will not be fined... this quarter."
+        : "EUR 10,000,000. The fine has been calculated.",
+      height * 0.48,
+      width < 520 ? 20 : 28,
+      phase === "VICTORY" ? COLORS.safeGreen : COLORS.dangerRed
+    );
+    return;
+  }
 
   context.fillStyle = COLORS.surface;
   context.fillRect(0, 0, width, 72);
@@ -160,21 +242,43 @@ canvas.addEventListener("click", () => {
 });
 
 canvas.addEventListener("pointerdown", (event) => {
-  if (gameState.getPhase() !== "MENU") {
+  if (gameState.getPhase() === "MENU") {
+    startRound(1);
+    return;
+  }
+
+  if (gameState.getPhase() !== "PLAYER_TURN" && gameState.getPhase() !== "BOSS_TURN") {
     return;
   }
 
   const rect = canvas.getBoundingClientRect();
   const cardId = getCardAt(cardHitBoxes, event.clientX - rect.left, event.clientY - rect.top);
 
-  if (!cardId) {
+  if (!cardId || !currentAttack) {
     return;
   }
 
   const played = cardDeck.play(cardId);
-  if (played) {
-    audioCache.play("sfx_card_play");
+  if (!played) {
+    return;
   }
+
+  audioCache.play("sfx_card_play");
+
+  const blocked = cardDeck.doesCardCounter(played, currentAttack);
+  if (blocked && played.effect.kind === "restore") {
+    restoreTargets(played.target, played.effect.amount ?? 0);
+  }
+
+  if (!blocked) {
+    complianceBoard.damageMany(currentAttack.targets.map((indicator) => ({
+      indicator,
+      amount: currentAttack?.damage ?? 0
+    })));
+  }
+
+  currentReaction = regulatorAI.getReaction(blocked);
+  advanceRound();
 });
 
 if (DEV_MODE) {
