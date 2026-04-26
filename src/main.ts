@@ -1,11 +1,13 @@
 import { AudioCache } from "./audio/audioCache";
 import { getAudioManifest } from "./audio/elevenlabs";
 import { COLORS, DEBUG_SKIP_AUDIO, DEV_MODE, GAME_TITLE, INDICATORS, TOTAL_ROUNDS } from "./config";
+import { CardDeck } from "./game/CardDeck";
 import { ComplianceBoard } from "./game/ComplianceBoard";
 import { GameState, type Phase } from "./game/GameState";
 import { renderLoadingScene } from "./scenes/LoadingScene";
 import { renderMenuScene } from "./scenes/MenuScene";
 import { renderComplianceBoard } from "./ui/BoardRenderer";
+import { getCardAt, renderCards, type CardHitBox } from "./ui/CardRenderer";
 
 const canvas = document.querySelector<HTMLCanvasElement>("#game");
 
@@ -22,9 +24,13 @@ if (!context) {
 const gameState = new GameState("LOADING");
 const audioCache = new AudioCache(getAudioManifest(), { skipAudio: DEBUG_SKIP_AUDIO });
 const complianceBoard = new ComplianceBoard();
+const cardDeck = new CardDeck();
+cardDeck.draw(5);
 
 let lastFrameTime = performance.now();
 let devicePixelRatioCache = window.devicePixelRatio || 1;
+let pointer = { x: -1, y: -1 };
+let cardHitBoxes: CardHitBox[] = [];
 
 const resizeCanvas = (): void => {
   devicePixelRatioCache = window.devicePixelRatio || 1;
@@ -74,9 +80,16 @@ const render = (): void => {
     renderMenuScene(context, width, height);
     renderComplianceBoard(context, complianceBoard.getAll(), {
       x: Math.max(16, width * 0.08),
-      y: height * 0.66,
+      y: height * 0.56,
       width: Math.min(560, width - 32),
       now: performance.now()
+    });
+    cardHitBoxes = renderCards(context, cardDeck.getHand(), {
+      x: 16,
+      y: Math.max(height - 156, height * 0.76),
+      width: width - 32,
+      height: 136,
+      pointer
     });
     return;
   }
@@ -127,6 +140,14 @@ const loop = (frameTime: number): void => {
 };
 
 window.addEventListener("resize", resizeCanvas);
+canvas.addEventListener("pointermove", (event) => {
+  const rect = canvas.getBoundingClientRect();
+  pointer = {
+    x: event.clientX - rect.left,
+    y: event.clientY - rect.top
+  };
+});
+
 canvas.addEventListener("click", () => {
   if (gameState.getPhase() !== "TAP_TO_START") {
     return;
@@ -136,6 +157,24 @@ canvas.addEventListener("click", () => {
     gameState.setPhase("MENU");
     audioCache.play("music_menu");
   });
+});
+
+canvas.addEventListener("pointerdown", (event) => {
+  if (gameState.getPhase() !== "MENU") {
+    return;
+  }
+
+  const rect = canvas.getBoundingClientRect();
+  const cardId = getCardAt(cardHitBoxes, event.clientX - rect.left, event.clientY - rect.top);
+
+  if (!cardId) {
+    return;
+  }
+
+  const played = cardDeck.play(cardId);
+  if (played) {
+    audioCache.play("sfx_card_play");
+  }
 });
 
 if (DEV_MODE) {
