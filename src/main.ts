@@ -4,6 +4,7 @@ import { selectMusicTrack, type MusicTrackId } from "./audio/MusicDirector";
 import { CARD_TIMER_SECONDS, COLORS, DEBUG_SKIP_AUDIO, DEV_MODE, GAME_TITLE, INDICATORS, TOTAL_ROUNDS } from "./config";
 import { CardDeck } from "./game/CardDeck";
 import { ComplianceBoard, type Indicator } from "./game/ComplianceBoard";
+import { getDebugActionForKey } from "./game/DebugActions";
 import { GameState, type Phase } from "./game/GameState";
 import { RegulatorAI, type Attack } from "./game/RegulatorAI";
 import { TurnTimer } from "./game/TurnTimer";
@@ -363,6 +364,23 @@ if (DEV_MODE) {
 
     if (event.key.toLowerCase() === "s") {
       audioCache.play("sfx_card_play");
+    }
+
+    const debugAction = getDebugActionForKey(event.key);
+    if (debugAction === "next-round") {
+      advanceRound();
+    }
+
+    if (debugAction === "force-boss") {
+      startRound(11);
+    }
+
+    if (debugAction === "force-victory") {
+      gameState.setPhase("VICTORY");
+    }
+
+    if (debugAction === "force-defeat") {
+      gameState.setPhase("DEFEAT");
     }
 
     const damageKeyIndex = ["q", "w", "e", "r", "t"].indexOf(event.key.toLowerCase());
