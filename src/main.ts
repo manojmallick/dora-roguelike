@@ -1,16 +1,18 @@
 import { AudioCache } from "./audio/audioCache";
 import { getAudioManifest } from "./audio/elevenlabs";
-import { COLORS, DEBUG_SKIP_AUDIO, DEV_MODE, GAME_TITLE, INDICATORS, TOTAL_ROUNDS } from "./config";
+import { CARD_TIMER_SECONDS, COLORS, DEBUG_SKIP_AUDIO, DEV_MODE, GAME_TITLE, INDICATORS, TOTAL_ROUNDS } from "./config";
 import { CardDeck } from "./game/CardDeck";
 import { ComplianceBoard, type Indicator } from "./game/ComplianceBoard";
 import { GameState, type Phase } from "./game/GameState";
 import { RegulatorAI, type Attack } from "./game/RegulatorAI";
+import { TurnTimer } from "./game/TurnTimer";
 import { renderBossIntroScene } from "./scenes/BossScene";
 import { renderGameScene } from "./scenes/GameScene";
 import { renderLoadingScene } from "./scenes/LoadingScene";
 import { renderMenuScene } from "./scenes/MenuScene";
 import { renderComplianceBoard } from "./ui/BoardRenderer";
 import { getCardAt, renderCards, type CardHitBox } from "./ui/CardRenderer";
+import { renderTurnTimer } from "./ui/HUD";
 
 const canvas = document.querySelector<HTMLCanvasElement>("#game");
 
@@ -29,6 +31,7 @@ const audioCache = new AudioCache(getAudioManifest(), { skipAudio: DEBUG_SKIP_AU
 const complianceBoard = new ComplianceBoard();
 const cardDeck = new CardDeck();
 const regulatorAI = new RegulatorAI();
+const turnTimer = new TurnTimer(CARD_TIMER_SECONDS);
 cardDeck.draw(5);
 
 let lastFrameTime = performance.now();
@@ -43,6 +46,7 @@ const startRound = (round: number): void => {
   currentRound = round;
   currentAttack = regulatorAI.getAttack(round);
   currentReaction = "";
+  turnTimer.start();
   gameState.setPhase(regulatorAI.isBossRound(round) ? "BOSS_TURN" : "PLAYER_TURN");
 };
 
@@ -77,6 +81,32 @@ const restoreTargets = (target: Indicator | "all" | "incidents-testing" | "none"
   }
 
   complianceBoard.restore(target, amount);
+};
+
+const resolveRound = (cardId?: string): void => {
+  if (!currentAttack || !turnTimer.resolve()) {
+    return;
+  }
+
+  const played = cardId ? cardDeck.play(cardId) : undefined;
+  if (played) {
+    audioCache.play("sfx_card_play");
+  }
+
+  const blocked = played ? cardDeck.doesCardCounter(played, currentAttack) : false;
+  if (blocked && played?.effect.kind === "restore") {
+    restoreTargets(played.target, played.effect.amount ?? 0);
+  }
+
+  if (!blocked) {
+    complianceBoard.damageMany(currentAttack.targets.map((indicator) => ({
+      indicator,
+      amount: currentAttack?.damage ?? 0
+    })));
+  }
+
+  currentReaction = regulatorAI.getReaction(blocked);
+  advanceRound();
 };
 
 const resizeCanvas = (): void => {
@@ -151,6 +181,7 @@ const render = (): void => {
 
   if ((phase === "PLAYER_TURN" || phase === "BOSS_TURN") && currentAttack) {
     renderGameScene(context, width, currentAttack, currentReaction);
+    renderTurnTimer(context, width, turnTimer.getRemainingSeconds());
     renderComplianceBoard(context, complianceBoard.getAll(), {
       x: Math.max(16, width * 0.08),
       y: 210,
@@ -210,6 +241,14 @@ const render = (): void => {
 
 const update = (deltaSeconds: number): void => {
   gameState.update(deltaSeconds);
+
+  if (gameState.getPhase() === "PLAYER_TURN" || gameState.getPhase() === "BOSS_TURN") {
+    turnTimer.update(deltaSeconds);
+
+    if (turnTimer.isExpired()) {
+      resolveRound();
+    }
+  }
 };
 
 const loop = (frameTime: number): void => {
@@ -258,27 +297,7 @@ canvas.addEventListener("pointerdown", (event) => {
     return;
   }
 
-  const played = cardDeck.play(cardId);
-  if (!played) {
-    return;
-  }
-
-  audioCache.play("sfx_card_play");
-
-  const blocked = cardDeck.doesCardCounter(played, currentAttack);
-  if (blocked && played.effect.kind === "restore") {
-    restoreTargets(played.target, played.effect.amount ?? 0);
-  }
-
-  if (!blocked) {
-    complianceBoard.damageMany(currentAttack.targets.map((indicator) => ({
-      indicator,
-      amount: currentAttack?.damage ?? 0
-    })));
-  }
-
-  currentReaction = regulatorAI.getReaction(blocked);
-  advanceRound();
+  resolveRound(cardId);
 });
 
 if (DEV_MODE) {
