@@ -51,3 +51,13 @@ The game uses stable audio ids for:
 - Card play, block, damage, critical damage, and boss entrance SFX
 
 During development, `VITE_DEBUG_SKIP_AUDIO=true` lets the game exercise all audio calls without requiring generated files.
+
+To generate audio locally, add `ELEVENLABS_API_KEY` to `.env`, then run:
+
+```bash
+npm run generate:audio -- --kind=tts
+npm run generate:audio -- --kind=sfx
+npm run generate:audio -- --kind=music
+```
+
+Generated MP3 files are written to `public/audio/` and preloaded before the tap-to-start screen.
