@@ -169,6 +169,10 @@ export class RegulatorAI {
     return ATTACKS.length;
   }
 
+  getAttacks(): Attack[] {
+    return [...ATTACKS];
+  }
+
   getReaction(blocked: boolean): string {
     return blocked ? "...Adequate. For now." : "As I suspected.";
   }

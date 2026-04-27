@@ -78,6 +78,8 @@ const startRound = (round: number): void => {
   if (round === 11) {
     audioCache.play("sfx_boss_entrance");
   }
+
+  audioCache.play(currentAttack.lineId);
 };
 
 const advanceRound = (): void => {
@@ -123,6 +125,10 @@ const resolveRound = (cardId?: string): void => {
   const played = cardId ? cardDeck.play(cardId) : undefined;
   if (played) {
     audioCache.play("sfx_card_play");
+
+    if (played.id === "legal-counsel") {
+      audioCache.play("lawyer_counsel");
+    }
   }
 
   const blocked = played ? cardDeck.doesCardCounter(played, currentAttack) : false;
