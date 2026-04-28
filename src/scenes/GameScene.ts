@@ -1,9 +1,10 @@
-import { COLORS, TOTAL_ROUNDS } from "../config";
+import { COLORS } from "../config";
 import type { Attack } from "../game/RegulatorAI";
 
 export const renderGameScene = (
   context: CanvasRenderingContext2D,
   width: number,
+  totalRounds: number,
   attack: Attack,
   attackText: string,
   reaction: string
@@ -18,7 +19,7 @@ export const renderGameScene = (
   context.fillText("DORA: The Compliance Roguelike", 24, 36, Math.max(140, width - 180));
 
   context.textAlign = "right";
-  context.fillText(`Round ${attack.round} / ${TOTAL_ROUNDS}`, width - 24, 36, 140);
+  context.fillText(`Round ${attack.round} / ${totalRounds}`, width - 24, 36, 140);
 
   context.textAlign = "center";
   context.fillStyle = attack.voice === "grand" ? COLORS.dangerRed : COLORS.euBlue;

@@ -1,4 +1,4 @@
-import type { BossMode, Locale } from "../config";
+import type { BossMode, GameDifficulty, Locale } from "../config";
 import type { Indicator } from "./ComplianceBoard";
 
 export type RegulatorVoice = "standard" | "grand";
@@ -241,9 +241,82 @@ const GDPR_BOSS_ATTACKS: Attack[] = [
   }
 ];
 
+const SYSTEMIC_HARD_ATTACKS: Attack[] = [
+  {
+    round: 16,
+    lineId: "systemic_16_concentration",
+    lineIdNl: "nl_systemic_16_concentration",
+    text: "As a systemic institution, your cloud concentration risk is no longer a footnote. It is the finding.",
+    textNl: "Als systeeminstelling is uw cloudconcentratierisico geen voetnoot meer. Het is de bevinding.",
+    voice: "grand",
+    targets: ["thirdparty", "ictrisk", "reporting"],
+    damage: 26,
+    type: "thirdparty"
+  },
+  {
+    round: 17,
+    lineId: "systemic_17_board",
+    lineIdNl: "nl_systemic_17_board",
+    text: "Your board oversight evidence is too thin for an entity of this importance.",
+    textNl: "Uw bewijs van bestuurstoezicht is te dun voor een instelling van dit belang.",
+    voice: "grand",
+    targets: ["ictrisk", "reporting"],
+    damage: 28,
+    type: "ictrisk"
+  },
+  {
+    round: 18,
+    lineId: "systemic_18_scenario",
+    lineIdNl: "nl_systemic_18_scenario",
+    text: "The severe but plausible scenario test did not include payment outage contagion. Remarkable.",
+    textNl: "De zware maar plausibele scenariotest bevatte geen besmetting door een betalingsstoring. Opmerkelijk.",
+    voice: "grand",
+    targets: ["testing", "incidents", "reporting"],
+    damage: 27,
+    type: "testing"
+  },
+  {
+    round: 19,
+    lineId: "systemic_19_cross_border",
+    lineIdNl: "nl_systemic_19_cross_border",
+    text: "Cross-border incident coordination is undocumented. Several authorities will enjoy this.",
+    textNl: "Grensoverschrijdende incidentcoordinatie is niet gedocumenteerd. Meerdere autoriteiten zullen hiervan genieten.",
+    voice: "grand",
+    targets: ["incidents", "thirdparty", "reporting"],
+    damage: 29,
+    type: "incidents"
+  },
+  {
+    round: 20,
+    lineId: "systemic_20_final",
+    lineIdNl: "nl_systemic_20_final",
+    text: "Final systemic assessment. All resilience indicators are now material to financial stability.",
+    textNl: "Laatste systeembeoordeling. Alle weerbaarheidsindicatoren zijn nu materieel voor financiele stabiliteit.",
+    voice: "grand",
+    targets: ["ictrisk", "incidents", "thirdparty", "testing", "reporting"],
+    damage: 22,
+    type: "any"
+  }
+];
+
+const hardenAttack = (attack: Attack): Attack => {
+  if (attack.round < 6 || attack.round > 10) {
+    return attack;
+  }
+
+  const secondTarget = attack.targets.includes("reporting") ? "ictrisk" : "reporting";
+
+  return {
+    ...attack,
+    targets: [...attack.targets, secondTarget],
+    damage: attack.damage + 4,
+    type: "any"
+  };
+};
+
 export class RegulatorAI {
-  getAttack(round: number, bossMode: BossMode = "dora"): Attack {
-    const attacks = this.getAttacks(bossMode);
+  getAttack(round: number, bossMode: BossMode = "dora", difficulty: GameDifficulty = "normal"): Attack {
+    const attacks = this.getAttacks(bossMode, difficulty);
     const attack = attacks.find((candidate) => candidate.round === round);
 
     if (!attack) {
@@ -257,19 +330,26 @@ export class RegulatorAI {
     return round >= 11;
   }
 
-  getTotalRounds(): number {
-    return ATTACKS.length;
+  getTotalRounds(difficulty: GameDifficulty = "normal"): number {
+    return difficulty === "hard" ? 20 : ATTACKS.length;
   }
 
-  getAttacks(bossMode: BossMode = "dora"): Attack[] {
-    if (bossMode === "gdpr") {
-      return [
+  getAttacks(bossMode: BossMode = "dora", difficulty: GameDifficulty = "normal"): Attack[] {
+    const attacks = bossMode === "gdpr"
+      ? [
         ...ATTACKS.filter((attack) => attack.round < 11),
         ...GDPR_BOSS_ATTACKS
+      ]
+      : [...ATTACKS];
+
+    if (difficulty === "hard") {
+      return [
+        ...attacks.map(hardenAttack),
+        ...SYSTEMIC_HARD_ATTACKS
       ];
     }
 
-    return [...ATTACKS];
+    return attacks;
   }
 
   getLineId(attack: Attack, locale: Locale): string {

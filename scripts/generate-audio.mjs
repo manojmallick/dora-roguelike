@@ -295,6 +295,72 @@ const dutchGdprBossJobs = [
   }
 ];
 
+const systemicHardJobs = [
+  {
+    id: "systemic_16_concentration",
+    file: "systemic_16_concentration.mp3",
+    voice: "grand",
+    text: "As a systemic institution, your cloud concentration risk is no longer a footnote. It is the finding."
+  },
+  {
+    id: "systemic_17_board",
+    file: "systemic_17_board.mp3",
+    voice: "grand",
+    text: "Your board oversight evidence is too thin for an entity of this importance."
+  },
+  {
+    id: "systemic_18_scenario",
+    file: "systemic_18_scenario.mp3",
+    voice: "grand",
+    text: "The severe but plausible scenario test did not include payment outage contagion. Remarkable."
+  },
+  {
+    id: "systemic_19_cross_border",
+    file: "systemic_19_cross_border.mp3",
+    voice: "grand",
+    text: "Cross-border incident coordination is undocumented. Several authorities will enjoy this."
+  },
+  {
+    id: "systemic_20_final",
+    file: "systemic_20_final.mp3",
+    voice: "grand",
+    text: "Final systemic assessment. All resilience indicators are now material to financial stability."
+  }
+];
+
+const dutchSystemicHardJobs = [
+  {
+    id: "nl_systemic_16_concentration",
+    file: "nl_systemic_16_concentration.mp3",
+    voice: "grand",
+    text: "Als systeeminstelling is uw cloudconcentratierisico geen voetnoot meer. Het is de bevinding."
+  },
+  {
+    id: "nl_systemic_17_board",
+    file: "nl_systemic_17_board.mp3",
+    voice: "grand",
+    text: "Uw bewijs van bestuurstoezicht is te dun voor een instelling van dit belang."
+  },
+  {
+    id: "nl_systemic_18_scenario",
+    file: "nl_systemic_18_scenario.mp3",
+    voice: "grand",
+    text: "De zware maar plausibele scenariotest bevatte geen besmetting door een betalingsstoring. Opmerkelijk."
+  },
+  {
+    id: "nl_systemic_19_cross_border",
+    file: "nl_systemic_19_cross_border.mp3",
+    voice: "grand",
+    text: "Grensoverschrijdende incidentcoordinatie is niet gedocumenteerd. Meerdere autoriteiten zullen hiervan genieten."
+  },
+  {
+    id: "nl_systemic_20_final",
+    file: "nl_systemic_20_final.mp3",
+    voice: "grand",
+    text: "Laatste systeembeoordeling. Alle weerbaarheidsindicatoren zijn nu materieel voor financiele stabiliteit."
+  }
+];
+
 const musicJobs = [
   {
     id: "music_menu",
@@ -436,6 +502,13 @@ const selectedJobs = () => {
     ];
   }
 
+  if (kind === "tts-hard") {
+    return [
+      ...systemicHardJobs.map((job) => ({ ...job, type: "tts" })),
+      ...dutchSystemicHardJobs.map((job) => ({ ...job, type: "tts" }))
+    ];
+  }
+
   if (kind === "music") {
     return musicJobs.map((job) => ({ ...job, type: "music" }));
   }
@@ -450,12 +523,14 @@ const selectedJobs = () => {
       ...dutchDialogueJobs.map((job) => ({ ...job, type: "tts" })),
       ...gdprBossJobs.map((job) => ({ ...job, type: "tts" })),
       ...dutchGdprBossJobs.map((job) => ({ ...job, type: "tts" })),
+      ...systemicHardJobs.map((job) => ({ ...job, type: "tts" })),
+      ...dutchSystemicHardJobs.map((job) => ({ ...job, type: "tts" })),
       ...sfxJobs.map((job) => ({ ...job, type: "sfx" })),
       ...musicJobs.map((job) => ({ ...job, type: "music" }))
     ];
   }
 
-  throw new Error(`Unsupported --kind=${kind}. Use all, tts, tts-nl, tts-gdpr, sfx, or music.`);
+  throw new Error(`Unsupported --kind=${kind}. Use all, tts, tts-nl, tts-gdpr, tts-hard, sfx, or music.`);
 };
 
 const requestAudio = async (url, body) => {

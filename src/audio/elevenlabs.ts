@@ -268,6 +268,66 @@ export const AUDIO_MANIFEST: AudioAsset[] = [
     volume: 1
   },
   {
+    id: "systemic_16_concentration",
+    type: "dialogue",
+    src: "/audio/systemic_16_concentration.mp3",
+    volume: 1
+  },
+  {
+    id: "systemic_17_board",
+    type: "dialogue",
+    src: "/audio/systemic_17_board.mp3",
+    volume: 1
+  },
+  {
+    id: "systemic_18_scenario",
+    type: "dialogue",
+    src: "/audio/systemic_18_scenario.mp3",
+    volume: 1
+  },
+  {
+    id: "systemic_19_cross_border",
+    type: "dialogue",
+    src: "/audio/systemic_19_cross_border.mp3",
+    volume: 1
+  },
+  {
+    id: "systemic_20_final",
+    type: "dialogue",
+    src: "/audio/systemic_20_final.mp3",
+    volume: 1
+  },
+  {
+    id: "nl_systemic_16_concentration",
+    type: "dialogue",
+    src: "/audio/nl_systemic_16_concentration.mp3",
+    volume: 1
+  },
+  {
+    id: "nl_systemic_17_board",
+    type: "dialogue",
+    src: "/audio/nl_systemic_17_board.mp3",
+    volume: 1
+  },
+  {
+    id: "nl_systemic_18_scenario",
+    type: "dialogue",
+    src: "/audio/nl_systemic_18_scenario.mp3",
+    volume: 1
+  },
+  {
+    id: "nl_systemic_19_cross_border",
+    type: "dialogue",
+    src: "/audio/nl_systemic_19_cross_border.mp3",
+    volume: 1
+  },
+  {
+    id: "nl_systemic_20_final",
+    type: "dialogue",
+    src: "/audio/nl_systemic_20_final.mp3",
+    volume: 1
+  },
+  {
     id: "music_menu",
     type: "music",
     src: "/audio/music_menu.mp3",
