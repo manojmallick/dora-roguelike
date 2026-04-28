@@ -224,8 +224,110 @@ const createCards = (): Card[] => [
     citation: "DORA Article 6",
     description: "Restore Reporting by 35%.",
     flavour: "A dashboard that says both less and more than anyone hoped."
+  },
+  {
+    id: "nis2-risk-analysis",
+    name: "NIS2 Risk Analysis",
+    type: "shield",
+    target: "ictrisk",
+    effect: { kind: "block" },
+    citation: "NIS2 Article 21(2)(a)",
+    description: "Block an ICT Risk governance attack.",
+    flavour: "A risk register with fewer vibes and more owners."
+  },
+  {
+    id: "nis2-incident-handling",
+    name: "NIS2 Incident Handling",
+    type: "shield",
+    target: "incidents",
+    effect: { kind: "block" },
+    citation: "NIS2 Article 21(2)(b)",
+    description: "Block an Incident Response attack.",
+    flavour: "Everyone knows the bridge link. A rare luxury."
+  },
+  {
+    id: "nis2-business-continuity",
+    name: "NIS2 Continuity Plan",
+    type: "restore",
+    target: "testing",
+    effect: { kind: "restore", amount: 45 },
+    citation: "NIS2 Article 21(2)(c)",
+    description: "Restore Testing by 45%.",
+    flavour: "The restore test finally restored something other than confidence."
+  },
+  {
+    id: "nis2-supply-chain",
+    name: "NIS2 Supply Chain Review",
+    type: "shield",
+    target: "thirdparty",
+    effect: { kind: "block" },
+    citation: "NIS2 Article 21(2)(d)",
+    description: "Block a Third-Party attack.",
+    flavour: "Your vendor's vendor has entered the chat."
+  },
+  {
+    id: "nis2-secure-development",
+    name: "NIS2 Secure Development",
+    type: "restore",
+    target: "ictrisk",
+    effect: { kind: "restore", amount: 35 },
+    citation: "NIS2 Article 21(2)(e)",
+    description: "Restore ICT Risk by 35%.",
+    flavour: "The pull request now includes threat modeling. Somehow."
+  },
+  {
+    id: "nis2-effectiveness-testing",
+    name: "NIS2 Effectiveness Testing",
+    type: "shield",
+    target: "testing",
+    effect: { kind: "block" },
+    citation: "NIS2 Article 21(2)(f)",
+    description: "Block a Testing attack.",
+    flavour: "A control test with evidence. The auditor briefly smiles."
+  },
+  {
+    id: "nis2-cyber-hygiene",
+    name: "NIS2 Cyber Hygiene",
+    type: "restore",
+    target: "incidents",
+    effect: { kind: "restore", amount: 35 },
+    citation: "NIS2 Article 21(2)(g)",
+    description: "Restore Incidents by 35%.",
+    flavour: "Security training, but the quiz finally learned shame."
+  },
+  {
+    id: "nis2-cryptography",
+    name: "NIS2 Cryptography",
+    type: "shield",
+    target: "reporting",
+    effect: { kind: "block" },
+    citation: "NIS2 Article 21(2)(h)",
+    description: "Block a Reporting or evidence attack.",
+    flavour: "Encrypted, logged, and blessed by key rotation."
+  },
+  {
+    id: "nis2-access-control",
+    name: "NIS2 Access Control",
+    type: "shield",
+    target: "ictrisk",
+    effect: { kind: "block" },
+    citation: "NIS2 Article 21(2)(i)",
+    description: "Block an access-control attack.",
+    flavour: "Least privilege: beloved in policy, feared in Slack."
+  },
+  {
+    id: "nis2-mfa-secure-comms",
+    name: "NIS2 MFA + Secure Comms",
+    type: "shield",
+    target: "incidents-testing",
+    effect: { kind: "block" },
+    citation: "NIS2 Article 21(2)(j)",
+    description: "Block Incident or Testing attacks.",
+    flavour: "MFA fatigue meets secure communications. Nobody wins, but everyone logs in."
   }
 ];
+
+export const getCardDefinitions = (): Card[] => createCards();
 
 export class CardDeck {
   private readonly random: () => number;
