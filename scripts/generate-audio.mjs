@@ -229,6 +229,72 @@ const dutchDialogueJobs = [
   }
 ];
 
+const gdprBossJobs = [
+  {
+    id: "gdpr_boss_01_transparency",
+    file: "gdpr_boss_01_transparency.mp3",
+    voice: "grand",
+    text: "The Data Protection Authority has joined this audit. Your privacy notice fails Article 13 transparency requirements."
+  },
+  {
+    id: "gdpr_boss_02_erasure",
+    file: "gdpr_boss_02_erasure.mp3",
+    voice: "grand",
+    text: "Article 17. A data subject requested erasure. Your processor chain cannot prove completion."
+  },
+  {
+    id: "gdpr_boss_03_breach",
+    file: "gdpr_boss_03_breach.mp3",
+    voice: "grand",
+    text: "Article 33 requires breach notification within 72 hours. Your incident clock started yesterday."
+  },
+  {
+    id: "gdpr_boss_04_consent",
+    file: "gdpr_boss_04_consent.mp3",
+    voice: "grand",
+    text: "Your consent records are ambiguous. Ambiguity is not a lawful basis under pressure."
+  },
+  {
+    id: "gdpr_boss_05_article_83",
+    file: "gdpr_boss_05_article_83.mp3",
+    voice: "grand",
+    text: "Article 83 administrative fines are now under consideration. Four percent of global turnover has a certain elegance."
+  }
+];
+
+const dutchGdprBossJobs = [
+  {
+    id: "nl_gdpr_boss_01_transparency",
+    file: "nl_gdpr_boss_01_transparency.mp3",
+    voice: "grand",
+    text: "De Autoriteit Persoonsgegevens neemt deel aan deze audit. Uw privacyverklaring voldoet niet aan de transparantievereisten van artikel 13."
+  },
+  {
+    id: "nl_gdpr_boss_02_erasure",
+    file: "nl_gdpr_boss_02_erasure.mp3",
+    voice: "grand",
+    text: "Artikel 17. Een betrokkene verzocht om verwijdering. Uw verwerkersketen kan voltooiing niet aantonen."
+  },
+  {
+    id: "nl_gdpr_boss_03_breach",
+    file: "nl_gdpr_boss_03_breach.mp3",
+    voice: "grand",
+    text: "Artikel 33 vereist melding van een datalek binnen 72 uur. Uw incidentklok is gisteren gestart."
+  },
+  {
+    id: "nl_gdpr_boss_04_consent",
+    file: "nl_gdpr_boss_04_consent.mp3",
+    voice: "grand",
+    text: "Uw toestemmingsregistraties zijn dubbelzinnig. Dubbelzinnigheid is geen rechtsgrond onder druk."
+  },
+  {
+    id: "nl_gdpr_boss_05_article_83",
+    file: "nl_gdpr_boss_05_article_83.mp3",
+    voice: "grand",
+    text: "Administratieve boetes onder artikel 83 worden nu overwogen. Vier procent van de wereldwijde omzet heeft een zekere elegantie."
+  }
+];
+
 const musicJobs = [
   {
     id: "music_menu",
@@ -363,6 +429,13 @@ const selectedJobs = () => {
     return dutchDialogueJobs.map((job) => ({ ...job, type: "tts" }));
   }
 
+  if (kind === "tts-gdpr") {
+    return [
+      ...gdprBossJobs.map((job) => ({ ...job, type: "tts" })),
+      ...dutchGdprBossJobs.map((job) => ({ ...job, type: "tts" }))
+    ];
+  }
+
   if (kind === "music") {
     return musicJobs.map((job) => ({ ...job, type: "music" }));
   }
@@ -375,12 +448,14 @@ const selectedJobs = () => {
     return [
       ...dialogueJobs.map((job) => ({ ...job, type: "tts" })),
       ...dutchDialogueJobs.map((job) => ({ ...job, type: "tts" })),
+      ...gdprBossJobs.map((job) => ({ ...job, type: "tts" })),
+      ...dutchGdprBossJobs.map((job) => ({ ...job, type: "tts" })),
       ...sfxJobs.map((job) => ({ ...job, type: "sfx" })),
       ...musicJobs.map((job) => ({ ...job, type: "music" }))
     ];
   }
 
-  throw new Error(`Unsupported --kind=${kind}. Use all, tts, tts-nl, sfx, or music.`);
+  throw new Error(`Unsupported --kind=${kind}. Use all, tts, tts-nl, tts-gdpr, sfx, or music.`);
 };
 
 const requestAudio = async (url, body) => {

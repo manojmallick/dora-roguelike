@@ -33,6 +33,16 @@ describe("RegulatorAI", () => {
     expect(ai.getAttack(13).targets.length).toBeGreaterThanOrEqual(2);
   });
 
+  it("can swap rounds 11 through 15 to GDPR boss attacks", () => {
+    const ai = new RegulatorAI();
+    const attack = ai.getAttack(11, "gdpr");
+
+    expect(attack.lineId).toBe("gdpr_boss_01_transparency");
+    expect(attack.text).toContain("Data Protection Authority");
+    expect(ai.getAttack(10, "gdpr").lineId).toBe("dialogue_18_reporting");
+    expect(ai.getAttack(15, "gdpr").text).toContain("Article 83");
+  });
+
   it("throws for unconfigured rounds", () => {
     const ai = new RegulatorAI();
 

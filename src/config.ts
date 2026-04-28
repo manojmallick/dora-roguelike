@@ -11,6 +11,11 @@ export const GAME_LOCALE: Locale = typeof window !== "undefined"
   && new URLSearchParams(window.location.search).get("locale") === "nl"
   ? "nl"
   : "en";
+export type BossMode = "dora" | "gdpr";
+export const BOSS_MODE: BossMode = typeof window !== "undefined"
+  && new URLSearchParams(window.location.search).get("boss") === "gdpr"
+  ? "gdpr"
+  : "dora";
 
 export const INDICATORS = [
   "ictrisk",
