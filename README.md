@@ -23,7 +23,7 @@ npm install
 npm run dev
 ```
 
-Open the Vite URL and tap once to unlock audio. Until generated ElevenLabs files are present, keep `VITE_DEBUG_SKIP_AUDIO=true`.
+Open the Vite URL and tap once to unlock audio. Use `VITE_DEBUG_SKIP_AUDIO=true` only when you intentionally want to bypass missing local audio files.
 
 ## Validation
 
@@ -50,7 +50,7 @@ The game uses stable audio ids for:
 - Menu, calm, tense, boss, victory, and defeat music
 - Card play, block, damage, critical damage, and boss entrance SFX
 
-During development, `VITE_DEBUG_SKIP_AUDIO=true` lets the game exercise all audio calls without requiring generated files.
+During development, `VITE_DEBUG_SKIP_AUDIO=true` lets the game exercise all audio calls without requiring generated files. Production audio is enabled by default when the variable is unset.
 
 To generate audio locally, add `ELEVENLABS_API_KEY` to `.env`, then run:
 
