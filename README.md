@@ -1,5 +1,7 @@
 # DORA: The Compliance Roguelike
 
+![DORA: The Compliance Roguelike cover](public/cover-social.svg)
+
 Survive the audit. Save the FinTech.
 
 A browser-based card roguelike where you play as a FinTech CTO defending against EU regulatory audit findings. The Regulator is designed around pre-generated ElevenLabs TTS, adaptive music, and audit findings that escalate into a Grand Regulator boss phase.
