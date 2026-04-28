@@ -5,6 +5,7 @@ export const renderGameScene = (
   context: CanvasRenderingContext2D,
   width: number,
   attack: Attack,
+  attackText: string,
   reaction: string
 ): void => {
   context.fillStyle = COLORS.surface;
@@ -26,7 +27,7 @@ export const renderGameScene = (
 
   context.fillStyle = COLORS.text;
   context.font = "700 18px system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif";
-  context.fillText(attack.text, width / 2, 140, Math.max(260, width - 48));
+  context.fillText(attackText, width / 2, 140, Math.max(260, width - 48));
 
   if (reaction) {
     context.fillStyle = COLORS.muted;

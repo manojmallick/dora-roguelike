@@ -1,7 +1,7 @@
 import { AudioCache } from "./audio/audioCache";
 import { getAudioManifest } from "./audio/elevenlabs";
 import { selectMusicTrack, type MusicTrackId } from "./audio/MusicDirector";
-import { CARD_TIMER_SECONDS, COLORS, DEBUG_SKIP_AUDIO, DEV_MODE, ENABLE_QA_SHORTCUTS, GAME_TITLE, INDICATORS, RECORDING_MODE, TOTAL_ROUNDS } from "./config";
+import { CARD_TIMER_SECONDS, COLORS, DEBUG_SKIP_AUDIO, DEV_MODE, ENABLE_QA_SHORTCUTS, GAME_LOCALE, GAME_TITLE, INDICATORS, RECORDING_MODE, TOTAL_ROUNDS } from "./config";
 import { CardDeck } from "./game/CardDeck";
 import { ComplianceBoard, type Indicator } from "./game/ComplianceBoard";
 import { getDebugActionForKey } from "./game/DebugActions";
@@ -79,7 +79,7 @@ const startRound = (round: number): void => {
     audioCache.play("sfx_boss_entrance");
   }
 
-  audioCache.play(currentAttack.lineId);
+  audioCache.play(regulatorAI.getLineId(currentAttack, GAME_LOCALE));
 };
 
 const advanceRound = (): void => {
@@ -127,7 +127,7 @@ const resolveRound = (cardId?: string): void => {
     audioCache.play("sfx_card_play");
 
     if (played.id === "legal-counsel") {
-      audioCache.play("lawyer_counsel");
+      audioCache.play(GAME_LOCALE === "nl" ? "nl_lawyer_counsel" : "lawyer_counsel");
     }
   }
 
@@ -221,7 +221,7 @@ const render = (): void => {
   context.fillRect(0, 0, width, height);
 
   if ((phase === "PLAYER_TURN" || phase === "BOSS_TURN") && currentAttack) {
-    renderGameScene(context, width, currentAttack, currentReaction);
+    renderGameScene(context, width, currentAttack, regulatorAI.getText(currentAttack, GAME_LOCALE), currentReaction);
     renderRegulator(context, width - 112, 190, currentAttack.voice, true, performance.now());
     renderTurnTimer(context, width, turnTimer.getRemainingSeconds());
     renderComplianceBoard(context, complianceBoard.getAll(), {

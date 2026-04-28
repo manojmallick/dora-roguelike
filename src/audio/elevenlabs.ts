@@ -112,6 +112,102 @@ export const AUDIO_MANIFEST: AudioAsset[] = [
     volume: 1
   },
   {
+    id: "nl_dialogue_01_ictrisk",
+    type: "dialogue",
+    src: "/audio/nl_dialogue_01_ictrisk.mp3",
+    volume: 1
+  },
+  {
+    id: "nl_dialogue_02_incidents",
+    type: "dialogue",
+    src: "/audio/nl_dialogue_02_incidents.mp3",
+    volume: 1
+  },
+  {
+    id: "nl_dialogue_03_testing",
+    type: "dialogue",
+    src: "/audio/nl_dialogue_03_testing.mp3",
+    volume: 1
+  },
+  {
+    id: "nl_dialogue_04_thirdparty",
+    type: "dialogue",
+    src: "/audio/nl_dialogue_04_thirdparty.mp3",
+    volume: 1
+  },
+  {
+    id: "nl_dialogue_05_security",
+    type: "dialogue",
+    src: "/audio/nl_dialogue_05_security.mp3",
+    volume: 1
+  },
+  {
+    id: "nl_dialogue_11_threat_intel",
+    type: "dialogue",
+    src: "/audio/nl_dialogue_11_threat_intel.mp3",
+    volume: 1
+  },
+  {
+    id: "nl_dialogue_12_testing_inadequate",
+    type: "dialogue",
+    src: "/audio/nl_dialogue_12_testing_inadequate.mp3",
+    volume: 1
+  },
+  {
+    id: "nl_dialogue_13_rto_rpo",
+    type: "dialogue",
+    src: "/audio/nl_dialogue_13_rto_rpo.mp3",
+    volume: 1
+  },
+  {
+    id: "nl_dialogue_16_article_28",
+    type: "dialogue",
+    src: "/audio/nl_dialogue_16_article_28.mp3",
+    volume: 1
+  },
+  {
+    id: "nl_dialogue_18_reporting",
+    type: "dialogue",
+    src: "/audio/nl_dialogue_18_reporting.mp3",
+    volume: 1
+  },
+  {
+    id: "nl_boss_01_disappointed",
+    type: "dialogue",
+    src: "/audio/nl_boss_01_disappointed.mp3",
+    volume: 1
+  },
+  {
+    id: "nl_boss_02_article_28",
+    type: "dialogue",
+    src: "/audio/nl_boss_02_article_28.mp3",
+    volume: 1
+  },
+  {
+    id: "nl_boss_04_simultaneous",
+    type: "dialogue",
+    src: "/audio/nl_boss_04_simultaneous.mp3",
+    volume: 1
+  },
+  {
+    id: "nl_boss_05_fine",
+    type: "dialogue",
+    src: "/audio/nl_boss_05_fine.mp3",
+    volume: 1
+  },
+  {
+    id: "nl_boss_09_ten_million",
+    type: "dialogue",
+    src: "/audio/nl_boss_09_ten_million.mp3",
+    volume: 1
+  },
+  {
+    id: "nl_lawyer_counsel",
+    type: "dialogue",
+    src: "/audio/nl_lawyer_counsel.mp3",
+    volume: 1
+  },
+  {
     id: "music_menu",
     type: "music",
     src: "/audio/music_menu.mp3",
