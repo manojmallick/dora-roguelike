@@ -45,6 +45,8 @@ npm run build
 
 For production video capture, append `?recording=1` to the live demo URL to enable the same shortcuts without changing the normal judge-facing URL.
 
+For Dutch regulator mode, append `?locale=nl` to the live demo URL.
+
 ## ElevenLabs Integration
 
 The game uses stable audio ids for:
@@ -60,6 +62,7 @@ To generate audio locally, add `ELEVENLABS_API_KEY` to `.env`, then run:
 
 ```bash
 npm run generate:audio -- --kind=tts
+npm run generate:audio -- --kind=tts-nl
 npm run generate:audio -- --kind=sfx
 npm run generate:audio -- --kind=music
 ```

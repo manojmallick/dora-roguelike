@@ -10,6 +10,16 @@ describe("RegulatorAI", () => {
     expect(ai.getAttack(15)).toMatchObject({ round: 15, voice: "grand" });
   });
 
+  it("provides Dutch text and audio ids for locale mode", () => {
+    const ai = new RegulatorAI();
+    const attack = ai.getAttack(9);
+
+    expect(ai.getText(attack, "nl")).toContain("Artikel 28");
+    expect(ai.getLineId(attack, "nl")).toBe("nl_dialogue_16_article_28");
+    expect(ai.getText(attack, "en")).toContain("Article 28");
+    expect(ai.getLineId(attack, "en")).toBe("dialogue_16_article_28");
+  });
+
   it("marks rounds 11 through 15 as boss rounds", () => {
     const ai = new RegulatorAI();
 

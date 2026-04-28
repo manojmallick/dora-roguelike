@@ -6,6 +6,11 @@ export const DEBUG_SKIP_AUDIO = import.meta.env.VITE_DEBUG_SKIP_AUDIO === "true"
 export const RECORDING_MODE = typeof window !== "undefined"
   && new URLSearchParams(window.location.search).has("recording");
 export const ENABLE_QA_SHORTCUTS = DEV_MODE || RECORDING_MODE;
+export type Locale = "en" | "nl";
+export const GAME_LOCALE: Locale = typeof window !== "undefined"
+  && new URLSearchParams(window.location.search).get("locale") === "nl"
+  ? "nl"
+  : "en";
 
 export const INDICATORS = [
   "ictrisk",

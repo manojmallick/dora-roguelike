@@ -130,6 +130,105 @@ const dialogueJobs = [
   }
 ];
 
+const dutchDialogueJobs = [
+  {
+    id: "nl_dialogue_01_ictrisk",
+    file: "nl_dialogue_01_ictrisk.mp3",
+    voice: "standard",
+    text: "Uw ICT-risicobeheerraamwerk bevat geen bewijs van jaarlijkse beoordeling. Artikel 5."
+  },
+  {
+    id: "nl_dialogue_02_incidents",
+    file: "nl_dialogue_02_incidents.mp3",
+    voice: "standard",
+    text: "De incidentclassificatiematrix ontbreekt. Artikel 17 vereist dit."
+  },
+  {
+    id: "nl_dialogue_03_testing",
+    file: "nl_dialogue_03_testing.mp3",
+    voice: "standard",
+    text: "Geen gedocumenteerde bedrijfscontinuiteitstest in de afgelopen 12 maanden. Artikel 11."
+  },
+  {
+    id: "nl_dialogue_04_thirdparty",
+    file: "nl_dialogue_04_thirdparty.mp3",
+    voice: "standard",
+    text: "Uw register van derde partijen bevat 47 leveranciers. Bij 23 ontbreekt een contractbeoordelingsdatum."
+  },
+  {
+    id: "nl_dialogue_05_security",
+    file: "nl_dialogue_05_security.mp3",
+    voice: "standard",
+    text: "Multi-factor authenticatie wordt niet afgedwongen op 3 systemen die als kritiek zijn gemarkeerd."
+  },
+  {
+    id: "nl_dialogue_11_threat_intel",
+    file: "nl_dialogue_11_threat_intel.mp3",
+    voice: "standard",
+    text: "Deze bevinding is kritiek. Er is geen gedocumenteerd proces voor cyberdreigingsinformatie."
+  },
+  {
+    id: "nl_dialogue_12_testing_inadequate",
+    file: "nl_dialogue_12_testing_inadequate.mp3",
+    voice: "standard",
+    text: "Ik noteer in het dossier dat uw testprogramma grondig ontoereikend is."
+  },
+  {
+    id: "nl_dialogue_13_rto_rpo",
+    file: "nl_dialogue_13_rto_rpo.mp3",
+    voice: "standard",
+    text: "Uw recovery time objectives bestaan. Uw recovery point objectives niet."
+  },
+  {
+    id: "nl_dialogue_16_article_28",
+    file: "nl_dialogue_16_article_28.mp3",
+    voice: "standard",
+    text: "Uw ICT-risicoregister voor derde partijen is onvolledig. Artikel 28. Lid 3."
+  },
+  {
+    id: "nl_dialogue_18_reporting",
+    file: "nl_dialogue_18_reporting.mp3",
+    voice: "standard",
+    text: "Uw tijdlijn voor incidentmelding is 96 uur. De vereiste is 4. Uur."
+  },
+  {
+    id: "nl_boss_01_disappointed",
+    file: "nl_boss_01_disappointed.mp3",
+    voice: "grand",
+    text: "Ik heb uw complianceprogramma in zijn geheel beoordeeld. Ik ben... teleurgesteld."
+  },
+  {
+    id: "nl_boss_02_article_28",
+    file: "nl_boss_02_article_28.mp3",
+    voice: "grand",
+    text: "Artikel 28, lid 3. Uw kritieke leveranciers. Waar is de risicobeoordeling?"
+  },
+  {
+    id: "nl_boss_04_simultaneous",
+    file: "nl_boss_04_simultaneous.mp3",
+    voice: "grand",
+    text: "Ik heb 5 gelijktijdige tekortkomingen gemarkeerd. Dit is ongekend in mijn loopbaan."
+  },
+  {
+    id: "nl_boss_05_fine",
+    file: "nl_boss_05_fine.mp3",
+    voice: "grand",
+    text: "De boeteberekening is gestart. De beroepsprocedure is langdurig. En kostbaar."
+  },
+  {
+    id: "nl_boss_09_ten_million",
+    file: "nl_boss_09_ten_million.mp3",
+    voice: "grand",
+    text: "Tien miljoen euro is het voorlopige bedrag. Onder voorbehoud van aanpassing. Naar boven."
+  },
+  {
+    id: "nl_lawyer_counsel",
+    file: "nl_lawyer_counsel.mp3",
+    voice: "lawyer",
+    text: "Ik regel dit. Aan de vereisten van artikel 28 is substantieel voldaan onder de behandelingsuitzondering. We gaan door."
+  }
+];
+
 const musicJobs = [
   {
     id: "music_menu",
@@ -260,6 +359,10 @@ const selectedJobs = () => {
     return dialogueJobs.map((job) => ({ ...job, type: "tts" }));
   }
 
+  if (kind === "tts-nl") {
+    return dutchDialogueJobs.map((job) => ({ ...job, type: "tts" }));
+  }
+
   if (kind === "music") {
     return musicJobs.map((job) => ({ ...job, type: "music" }));
   }
@@ -271,12 +374,13 @@ const selectedJobs = () => {
   if (kind === "all") {
     return [
       ...dialogueJobs.map((job) => ({ ...job, type: "tts" })),
+      ...dutchDialogueJobs.map((job) => ({ ...job, type: "tts" })),
       ...sfxJobs.map((job) => ({ ...job, type: "sfx" })),
       ...musicJobs.map((job) => ({ ...job, type: "music" }))
     ];
   }
 
-  throw new Error(`Unsupported --kind=${kind}. Use all, tts, sfx, or music.`);
+  throw new Error(`Unsupported --kind=${kind}. Use all, tts, tts-nl, sfx, or music.`);
 };
 
 const requestAudio = async (url, body) => {
