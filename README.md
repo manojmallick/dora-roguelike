@@ -47,6 +47,8 @@ For production video capture, append `?recording=1` to the live demo URL to enab
 
 For Dutch regulator mode, append `?locale=nl` to the live demo URL.
 
+For the optional GDPR Data Protection Authority boss, append `?boss=gdpr`.
+
 ## ElevenLabs Integration
 
 The game uses stable audio ids for:
@@ -63,6 +65,7 @@ To generate audio locally, add `ELEVENLABS_API_KEY` to `.env`, then run:
 ```bash
 npm run generate:audio -- --kind=tts
 npm run generate:audio -- --kind=tts-nl
+npm run generate:audio -- --kind=tts-gdpr
 npm run generate:audio -- --kind=sfx
 npm run generate:audio -- --kind=music
 ```

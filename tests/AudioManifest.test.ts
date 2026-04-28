@@ -7,9 +7,13 @@ describe("audio manifest", () => {
     const manifestIds = new Set(getAudioManifest().map((asset) => asset.id));
     const attackIds = new RegulatorAI().getAttacks().map((attack) => attack.lineId);
     const dutchAttackIds = new RegulatorAI().getAttacks().map((attack) => attack.lineIdNl);
+    const gdprAttackIds = new RegulatorAI().getAttacks("gdpr").map((attack) => attack.lineId);
+    const dutchGdprAttackIds = new RegulatorAI().getAttacks("gdpr").map((attack) => attack.lineIdNl);
 
     expect(attackIds.every((lineId) => manifestIds.has(lineId))).toBe(true);
     expect(dutchAttackIds.every((lineId) => manifestIds.has(lineId))).toBe(true);
+    expect(gdprAttackIds.every((lineId) => manifestIds.has(lineId))).toBe(true);
+    expect(dutchGdprAttackIds.every((lineId) => manifestIds.has(lineId))).toBe(true);
   });
 
   it("contains the legal counsel response line", () => {

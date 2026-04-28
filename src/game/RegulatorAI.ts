@@ -1,4 +1,4 @@
-import type { Locale } from "../config";
+import type { BossMode, Locale } from "../config";
 import type { Indicator } from "./ComplianceBoard";
 
 export type RegulatorVoice = "standard" | "grand";
@@ -183,9 +183,68 @@ const ATTACKS: Attack[] = [
   }
 ];
 
+const GDPR_BOSS_ATTACKS: Attack[] = [
+  {
+    round: 11,
+    lineId: "gdpr_boss_01_transparency",
+    lineIdNl: "nl_gdpr_boss_01_transparency",
+    text: "The Data Protection Authority has joined this audit. Your privacy notice fails Article 13 transparency requirements.",
+    textNl: "De Autoriteit Persoonsgegevens neemt deel aan deze audit. Uw privacyverklaring voldoet niet aan de transparantievereisten van artikel 13.",
+    voice: "grand",
+    targets: ["reporting", "thirdparty"],
+    damage: 24,
+    type: "reporting"
+  },
+  {
+    round: 12,
+    lineId: "gdpr_boss_02_erasure",
+    lineIdNl: "nl_gdpr_boss_02_erasure",
+    text: "Article 17. A data subject requested erasure. Your processor chain cannot prove completion.",
+    textNl: "Artikel 17. Een betrokkene verzocht om verwijdering. Uw verwerkersketen kan voltooiing niet aantonen.",
+    voice: "grand",
+    targets: ["thirdparty", "reporting"],
+    damage: 26,
+    type: "thirdparty"
+  },
+  {
+    round: 13,
+    lineId: "gdpr_boss_03_breach",
+    lineIdNl: "nl_gdpr_boss_03_breach",
+    text: "Article 33 requires breach notification within 72 hours. Your incident clock started yesterday.",
+    textNl: "Artikel 33 vereist melding van een datalek binnen 72 uur. Uw incidentklok is gisteren gestart.",
+    voice: "grand",
+    targets: ["incidents", "reporting"],
+    damage: 24,
+    type: "incidents"
+  },
+  {
+    round: 14,
+    lineId: "gdpr_boss_04_consent",
+    lineIdNl: "nl_gdpr_boss_04_consent",
+    text: "Your consent records are ambiguous. Ambiguity is not a lawful basis under pressure.",
+    textNl: "Uw toestemmingsregistraties zijn dubbelzinnig. Dubbelzinnigheid is geen rechtsgrond onder druk.",
+    voice: "grand",
+    targets: ["ictrisk", "reporting"],
+    damage: 25,
+    type: "any"
+  },
+  {
+    round: 15,
+    lineId: "gdpr_boss_05_article_83",
+    lineIdNl: "nl_gdpr_boss_05_article_83",
+    text: "Article 83 administrative fines are now under consideration. Four percent of global turnover has a certain elegance.",
+    textNl: "Administratieve boetes onder artikel 83 worden nu overwogen. Vier procent van de wereldwijde omzet heeft een zekere elegantie.",
+    voice: "grand",
+    targets: ["ictrisk", "incidents", "thirdparty", "testing", "reporting"],
+    damage: 19,
+    type: "any"
+  }
+];
+
 export class RegulatorAI {
-  getAttack(round: number): Attack {
-    const attack = ATTACKS.find((candidate) => candidate.round === round);
+  getAttack(round: number, bossMode: BossMode = "dora"): Attack {
+    const attacks = this.getAttacks(bossMode);
+    const attack = attacks.find((candidate) => candidate.round === round);
 
     if (!attack) {
       throw new Error(`No regulator attack configured for round ${round}`);
@@ -202,7 +261,14 @@ export class RegulatorAI {
     return ATTACKS.length;
   }
 
-  getAttacks(): Attack[] {
+  getAttacks(bossMode: BossMode = "dora"): Attack[] {
+    if (bossMode === "gdpr") {
+      return [
+        ...ATTACKS.filter((attack) => attack.round < 11),
+        ...GDPR_BOSS_ATTACKS
+      ];
+    }
+
     return [...ATTACKS];
   }
 

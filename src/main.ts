@@ -1,7 +1,7 @@
 import { AudioCache } from "./audio/audioCache";
 import { getAudioManifest } from "./audio/elevenlabs";
 import { selectMusicTrack, type MusicTrackId } from "./audio/MusicDirector";
-import { CARD_TIMER_SECONDS, COLORS, DEBUG_SKIP_AUDIO, DEV_MODE, ENABLE_QA_SHORTCUTS, GAME_LOCALE, GAME_TITLE, INDICATORS, RECORDING_MODE, TOTAL_ROUNDS } from "./config";
+import { BOSS_MODE, CARD_TIMER_SECONDS, COLORS, DEBUG_SKIP_AUDIO, DEV_MODE, ENABLE_QA_SHORTCUTS, GAME_LOCALE, GAME_TITLE, INDICATORS, RECORDING_MODE, TOTAL_ROUNDS } from "./config";
 import { CardDeck } from "./game/CardDeck";
 import { ComplianceBoard, type Indicator } from "./game/ComplianceBoard";
 import { getDebugActionForKey } from "./game/DebugActions";
@@ -70,7 +70,7 @@ const updateMusic = (): void => {
 
 const startRound = (round: number): void => {
   currentRound = round;
-  currentAttack = regulatorAI.getAttack(round);
+  currentAttack = regulatorAI.getAttack(round, BOSS_MODE);
   currentReaction = "";
   turnTimer.start();
   gameState.setPhase(regulatorAI.isBossRound(round) ? "BOSS_TURN" : "PLAYER_TURN");

@@ -208,6 +208,66 @@ export const AUDIO_MANIFEST: AudioAsset[] = [
     volume: 1
   },
   {
+    id: "gdpr_boss_01_transparency",
+    type: "dialogue",
+    src: "/audio/gdpr_boss_01_transparency.mp3",
+    volume: 1
+  },
+  {
+    id: "gdpr_boss_02_erasure",
+    type: "dialogue",
+    src: "/audio/gdpr_boss_02_erasure.mp3",
+    volume: 1
+  },
+  {
+    id: "gdpr_boss_03_breach",
+    type: "dialogue",
+    src: "/audio/gdpr_boss_03_breach.mp3",
+    volume: 1
+  },
+  {
+    id: "gdpr_boss_04_consent",
+    type: "dialogue",
+    src: "/audio/gdpr_boss_04_consent.mp3",
+    volume: 1
+  },
+  {
+    id: "gdpr_boss_05_article_83",
+    type: "dialogue",
+    src: "/audio/gdpr_boss_05_article_83.mp3",
+    volume: 1
+  },
+  {
+    id: "nl_gdpr_boss_01_transparency",
+    type: "dialogue",
+    src: "/audio/nl_gdpr_boss_01_transparency.mp3",
+    volume: 1
+  },
+  {
+    id: "nl_gdpr_boss_02_erasure",
+    type: "dialogue",
+    src: "/audio/nl_gdpr_boss_02_erasure.mp3",
+    volume: 1
+  },
+  {
+    id: "nl_gdpr_boss_03_breach",
+    type: "dialogue",
+    src: "/audio/nl_gdpr_boss_03_breach.mp3",
+    volume: 1
+  },
+  {
+    id: "nl_gdpr_boss_04_consent",
+    type: "dialogue",
+    src: "/audio/nl_gdpr_boss_04_consent.mp3",
+    volume: 1
+  },
+  {
+    id: "nl_gdpr_boss_05_article_83",
+    type: "dialogue",
+    src: "/audio/nl_gdpr_boss_05_article_83.mp3",
+    volume: 1
+  },
+  {
     id: "music_menu",
     type: "music",
     src: "/audio/music_menu.mp3",
