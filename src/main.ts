@@ -1,10 +1,11 @@
 import { AudioCache } from "./audio/audioCache";
 import { getAudioManifest } from "./audio/elevenlabs";
 import { selectMusicTrack, type MusicTrackId } from "./audio/MusicDirector";
-import { BOSS_MODE, CARD_TIMER_SECONDS, COLORS, DEBUG_SKIP_AUDIO, DEV_MODE, ENABLE_QA_SHORTCUTS, GAME_LOCALE, GAME_TITLE, INDICATORS, RECORDING_MODE, TOTAL_ROUNDS } from "./config";
+import { BOSS_MODE, CARD_TIMER_SECONDS, COLORS, COOP_VIEW, DEBUG_SKIP_AUDIO, DEV_MODE, ENABLE_QA_SHORTCUTS, GAME_LOCALE, GAME_TITLE, INDICATORS, RECORDING_MODE, TOTAL_ROUNDS } from "./config";
 import { CardDeck } from "./game/CardDeck";
 import { ComplianceBoard, type Indicator } from "./game/ComplianceBoard";
 import { getDebugActionForKey } from "./game/DebugActions";
+import { getCoopRoleLabel, shouldShowAuditIntel, shouldShowCards } from "./game/CoopMode";
 import { GameState, type Phase } from "./game/GameState";
 import { RegulatorAI, type Attack } from "./game/RegulatorAI";
 import { TurnTimer } from "./game/TurnTimer";
@@ -66,6 +67,20 @@ const updateMusic = (): void => {
   }
 
   currentMusic = nextMusic;
+};
+
+const renderCoopRoleBanner = (width: number, y: number): void => {
+  const label = getCoopRoleLabel(COOP_VIEW);
+
+  if (!label) {
+    return;
+  }
+
+  context.fillStyle = COLORS.warnAmber;
+  context.font = "700 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+  context.fillText(label, width / 2, y, Math.max(260, width - 48));
 };
 
 const startRound = (round: number): void => {
@@ -196,19 +211,28 @@ const render = (): void => {
 
   if (phase === "MENU") {
     renderMenuScene(context, width, height);
-    renderComplianceBoard(context, complianceBoard.getAll(), {
-      x: Math.max(16, width * 0.08),
-      y: height * 0.56,
-      width: Math.min(560, width - 32),
-      now: performance.now()
-    });
-    cardHitBoxes = renderCards(context, cardDeck.getHand(), {
-      x: 16,
-      y: Math.max(height - 156, height * 0.76),
-      width: width - 32,
-      height: 136,
-      pointer
-    });
+    renderCoopRoleBanner(width, height * 0.62);
+
+    if (shouldShowAuditIntel(COOP_VIEW)) {
+      renderComplianceBoard(context, complianceBoard.getAll(), {
+        x: Math.max(16, width * 0.08),
+        y: height * 0.56,
+        width: Math.min(560, width - 32),
+        now: performance.now()
+      });
+    }
+
+    if (shouldShowCards(COOP_VIEW)) {
+      cardHitBoxes = renderCards(context, cardDeck.getHand(), {
+        x: 16,
+        y: Math.max(height - 156, height * 0.76),
+        width: width - 32,
+        height: 136,
+        pointer
+      });
+    } else {
+      cardHitBoxes = [];
+    }
     return;
   }
 
@@ -221,22 +245,31 @@ const render = (): void => {
   context.fillRect(0, 0, width, height);
 
   if ((phase === "PLAYER_TURN" || phase === "BOSS_TURN") && currentAttack) {
-    renderGameScene(context, width, currentAttack, regulatorAI.getText(currentAttack, GAME_LOCALE), currentReaction);
-    renderRegulator(context, width - 112, 190, currentAttack.voice, true, performance.now());
-    renderTurnTimer(context, width, turnTimer.getRemainingSeconds());
-    renderComplianceBoard(context, complianceBoard.getAll(), {
-      x: Math.max(16, width * 0.08),
-      y: 210,
-      width: Math.min(560, width - 32),
-      now: performance.now()
-    });
-    cardHitBoxes = renderCards(context, cardDeck.getHand(), {
-      x: 16,
-      y: Math.max(height - 156, height * 0.76),
-      width: width - 32,
-      height: 136,
-      pointer
-    });
+    if (shouldShowAuditIntel(COOP_VIEW)) {
+      renderGameScene(context, width, currentAttack, regulatorAI.getText(currentAttack, GAME_LOCALE), currentReaction);
+      renderRegulator(context, width - 112, 190, currentAttack.voice, true, performance.now());
+      renderComplianceBoard(context, complianceBoard.getAll(), {
+        x: Math.max(16, width * 0.08),
+        y: 210,
+        width: Math.min(560, width - 32),
+        now: performance.now()
+      });
+    }
+
+    renderCoopRoleBanner(width, shouldShowAuditIntel(COOP_VIEW) ? 188 : 96);
+
+    if (shouldShowCards(COOP_VIEW)) {
+      renderTurnTimer(context, width, turnTimer.getRemainingSeconds());
+      cardHitBoxes = renderCards(context, cardDeck.getHand(), {
+        x: 16,
+        y: Math.max(height - 156, height * 0.76),
+        width: width - 32,
+        height: 136,
+        pointer
+      });
+    } else {
+      cardHitBoxes = [];
+    }
     return;
   }
 
@@ -336,6 +369,10 @@ canvas.addEventListener("pointerdown", (event) => {
   }
 
   if (gameState.getPhase() !== "PLAYER_TURN" && gameState.getPhase() !== "BOSS_TURN") {
+    return;
+  }
+
+  if (!shouldShowCards(COOP_VIEW)) {
     return;
   }
 

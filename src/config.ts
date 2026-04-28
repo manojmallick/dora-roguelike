@@ -1,3 +1,5 @@
+import { parseCoopView } from "./game/CoopMode";
+
 export const GAME_TITLE = "DORA: The Compliance Roguelike";
 export const TOTAL_ROUNDS = 15;
 export const CARD_TIMER_SECONDS = 15;
@@ -16,6 +18,7 @@ export const BOSS_MODE: BossMode = typeof window !== "undefined"
   && new URLSearchParams(window.location.search).get("boss") === "gdpr"
   ? "gdpr"
   : "dora";
+export const COOP_VIEW = parseCoopView(typeof window !== "undefined" ? window.location.search : "");
 
 export const INDICATORS = [
   "ictrisk",

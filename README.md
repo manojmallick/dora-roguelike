@@ -49,6 +49,11 @@ For Dutch regulator mode, append `?locale=nl` to the live demo URL.
 
 For the optional GDPR Data Protection Authority boss, append `?boss=gdpr`.
 
+For two-player audit mode, open two windows:
+
+- Player 1 card hand: `?mode=coop&role=cards`
+- Player 2 board and regulator intent: `?mode=coop&role=board`
+
 ## ElevenLabs Integration
 
 The game uses stable audio ids for:
