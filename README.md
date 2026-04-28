@@ -41,6 +41,8 @@ npm run build
 - `Q/W/E/R/T`: damage compliance indicators
 - `A`: restore the lowest indicator
 
+For production video capture, append `?recording=1` to the live demo URL to enable the same shortcuts without changing the normal judge-facing URL.
+
 ## ElevenLabs Integration
 
 The game uses stable audio ids for:

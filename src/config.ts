@@ -3,6 +3,9 @@ export const TOTAL_ROUNDS = 15;
 export const CARD_TIMER_SECONDS = 15;
 export const DEV_MODE = import.meta.env.DEV;
 export const DEBUG_SKIP_AUDIO = import.meta.env.VITE_DEBUG_SKIP_AUDIO === "true";
+export const RECORDING_MODE = typeof window !== "undefined"
+  && new URLSearchParams(window.location.search).has("recording");
+export const ENABLE_QA_SHORTCUTS = DEV_MODE || RECORDING_MODE;
 
 export const INDICATORS = [
   "ictrisk",

@@ -115,41 +115,41 @@ export const AUDIO_MANIFEST: AudioAsset[] = [
     id: "music_menu",
     type: "music",
     src: "/audio/music_menu.mp3",
-    volume: 0.15,
+    volume: 0.24,
     loop: true
   },
   {
     id: "music_gameplay_calm",
     type: "music",
     src: "/audio/music_gameplay_calm.mp3",
-    volume: 0.15,
+    volume: 0.2,
     loop: true
   },
   {
     id: "music_gameplay_tense",
     type: "music",
     src: "/audio/music_gameplay_tense.mp3",
-    volume: 0.15,
+    volume: 0.22,
     loop: true
   },
   {
     id: "music_boss",
     type: "music",
     src: "/audio/music_boss.mp3",
-    volume: 0.15,
+    volume: 0.24,
     loop: true
   },
   {
     id: "music_victory",
     type: "music",
     src: "/audio/music_victory.mp3",
-    volume: 0.15
+    volume: 0.24
   },
   {
     id: "music_defeat",
     type: "music",
     src: "/audio/music_defeat.mp3",
-    volume: 0.15
+    volume: 0.26
   },
   {
     id: "sfx_card_play",
