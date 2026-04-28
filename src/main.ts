@@ -1,7 +1,7 @@
 import { AudioCache } from "./audio/audioCache";
 import { getAudioManifest } from "./audio/elevenlabs";
 import { selectMusicTrack, type MusicTrackId } from "./audio/MusicDirector";
-import { CARD_TIMER_SECONDS, COLORS, DEBUG_SKIP_AUDIO, DEV_MODE, GAME_TITLE, INDICATORS, TOTAL_ROUNDS } from "./config";
+import { CARD_TIMER_SECONDS, COLORS, DEBUG_SKIP_AUDIO, DEV_MODE, ENABLE_QA_SHORTCUTS, GAME_TITLE, INDICATORS, RECORDING_MODE, TOTAL_ROUNDS } from "./config";
 import { CardDeck } from "./game/CardDeck";
 import { ComplianceBoard, type Indicator } from "./game/ComplianceBoard";
 import { getDebugActionForKey } from "./game/DebugActions";
@@ -276,6 +276,14 @@ const render = (): void => {
       height - 16
     );
   }
+
+  if (RECORDING_MODE) {
+    context.fillStyle = COLORS.muted;
+    context.font = "12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
+    context.textAlign = "right";
+    context.textBaseline = "bottom";
+    context.fillText("recording mode", width - 16, height - 16);
+  }
 };
 
 const update = (deltaSeconds: number): void => {
@@ -341,7 +349,7 @@ canvas.addEventListener("pointerdown", (event) => {
   resolveRound(cardId);
 });
 
-if (DEV_MODE) {
+if (ENABLE_QA_SHORTCUTS) {
   window.addEventListener("keydown", (event) => {
     const phaseKeys: Record<string, Phase> = {
       "0": "LOADING",
