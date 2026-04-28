@@ -49,6 +49,8 @@ For Dutch regulator mode, append `?locale=nl` to the live demo URL.
 
 For the optional GDPR Data Protection Authority boss, append `?boss=gdpr`.
 
+For Systemic Institution hard mode, append `?difficulty=hard`.
+
 For two-player audit mode, open two windows:
 
 - Player 1 card hand: `?mode=coop&role=cards`
@@ -71,6 +73,7 @@ To generate audio locally, add `ELEVENLABS_API_KEY` to `.env`, then run:
 npm run generate:audio -- --kind=tts
 npm run generate:audio -- --kind=tts-nl
 npm run generate:audio -- --kind=tts-gdpr
+npm run generate:audio -- --kind=tts-hard
 npm run generate:audio -- --kind=sfx
 npm run generate:audio -- --kind=music
 ```

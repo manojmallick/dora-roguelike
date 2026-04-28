@@ -43,6 +43,15 @@ describe("RegulatorAI", () => {
     expect(ai.getAttack(15, "gdpr").text).toContain("Article 83");
   });
 
+  it("supports systemic institution hard mode with 20 rounds", () => {
+    const ai = new RegulatorAI();
+
+    expect(ai.getTotalRounds("hard")).toBe(20);
+    expect(ai.getAttack(6, "dora", "hard").targets.length).toBeGreaterThanOrEqual(2);
+    expect(ai.getAttack(16, "dora", "hard").lineId).toBe("systemic_16_concentration");
+    expect(ai.getAttack(20, "dora", "hard").damage).toBeGreaterThan(18);
+  });
+
   it("throws for unconfigured rounds", () => {
     const ai = new RegulatorAI();
 

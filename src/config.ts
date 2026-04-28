@@ -18,6 +18,11 @@ export const BOSS_MODE: BossMode = typeof window !== "undefined"
   && new URLSearchParams(window.location.search).get("boss") === "gdpr"
   ? "gdpr"
   : "dora";
+export type GameDifficulty = "normal" | "hard";
+export const GAME_DIFFICULTY: GameDifficulty = typeof window !== "undefined"
+  && new URLSearchParams(window.location.search).get("difficulty") === "hard"
+  ? "hard"
+  : "normal";
 export const COOP_VIEW = parseCoopView(typeof window !== "undefined" ? window.location.search : "");
 
 export const INDICATORS = [

@@ -1,7 +1,7 @@
 import { AudioCache } from "./audio/audioCache";
 import { getAudioManifest } from "./audio/elevenlabs";
 import { selectMusicTrack, type MusicTrackId } from "./audio/MusicDirector";
-import { BOSS_MODE, CARD_TIMER_SECONDS, COLORS, COOP_VIEW, DEBUG_SKIP_AUDIO, DEV_MODE, ENABLE_QA_SHORTCUTS, GAME_LOCALE, GAME_TITLE, INDICATORS, RECORDING_MODE, TOTAL_ROUNDS } from "./config";
+import { BOSS_MODE, CARD_TIMER_SECONDS, COLORS, COOP_VIEW, DEBUG_SKIP_AUDIO, DEV_MODE, ENABLE_QA_SHORTCUTS, GAME_DIFFICULTY, GAME_LOCALE, GAME_TITLE, INDICATORS, RECORDING_MODE } from "./config";
 import { CardDeck } from "./game/CardDeck";
 import { ComplianceBoard, type Indicator } from "./game/ComplianceBoard";
 import { getDebugActionForKey } from "./game/DebugActions";
@@ -37,7 +37,7 @@ const audioCache = new AudioCache(getAudioManifest(), { skipAudio: DEBUG_SKIP_AU
 const complianceBoard = new ComplianceBoard();
 const cardDeck = new CardDeck();
 const regulatorAI = new RegulatorAI();
-const turnTimer = new TurnTimer(CARD_TIMER_SECONDS);
+const turnTimer = new TurnTimer(GAME_DIFFICULTY === "hard" ? 10 : CARD_TIMER_SECONDS);
 cardDeck.draw(5);
 
 let lastFrameTime = performance.now();
@@ -48,6 +48,7 @@ let currentRound = 0;
 let currentAttack: Attack | undefined;
 let currentReaction = "";
 let currentMusic: MusicTrackId | undefined;
+const totalRounds = regulatorAI.getTotalRounds(GAME_DIFFICULTY);
 
 const updateMusic = (): void => {
   const nextMusic = selectMusicTrack(
@@ -85,7 +86,7 @@ const renderCoopRoleBanner = (width: number, y: number): void => {
 
 const startRound = (round: number): void => {
   currentRound = round;
-  currentAttack = regulatorAI.getAttack(round, BOSS_MODE);
+  currentAttack = regulatorAI.getAttack(round, BOSS_MODE, GAME_DIFFICULTY);
   currentReaction = "";
   turnTimer.start();
   gameState.setPhase(regulatorAI.isBossRound(round) ? "BOSS_TURN" : "PLAYER_TURN");
@@ -104,7 +105,7 @@ const advanceRound = (): void => {
     return;
   }
 
-  if (currentRound >= regulatorAI.getTotalRounds()) {
+  if (currentRound >= totalRounds) {
     gameState.setPhase("VICTORY");
     audioCache.play("music_victory");
     return;
@@ -246,7 +247,7 @@ const render = (): void => {
 
   if ((phase === "PLAYER_TURN" || phase === "BOSS_TURN") && currentAttack) {
     if (shouldShowAuditIntel(COOP_VIEW)) {
-      renderGameScene(context, width, currentAttack, regulatorAI.getText(currentAttack, GAME_LOCALE), currentReaction);
+    renderGameScene(context, width, totalRounds, currentAttack, regulatorAI.getText(currentAttack, GAME_LOCALE), currentReaction);
       renderRegulator(context, width - 112, 190, currentAttack.voice, true, performance.now());
       renderComplianceBoard(context, complianceBoard.getAll(), {
         x: Math.max(16, width * 0.08),
@@ -293,7 +294,7 @@ const render = (): void => {
   context.fillText(GAME_TITLE, 24, 36, Math.max(130, width - 172));
 
   context.textAlign = "right";
-  context.fillText(`Round 0 / ${TOTAL_ROUNDS}`, width - 24, 36, 128);
+  context.fillText(`Round 0 / ${totalRounds}`, width - 24, 36, 128);
 
   drawCenteredText("Survive the audit. Save the FinTech.", height * 0.42, width < 520 ? 22 : 28);
   drawCenteredText(`Phase: ${phase}`, height * 0.52, 22, COLORS.euBlue);

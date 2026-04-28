@@ -9,11 +9,15 @@ describe("audio manifest", () => {
     const dutchAttackIds = new RegulatorAI().getAttacks().map((attack) => attack.lineIdNl);
     const gdprAttackIds = new RegulatorAI().getAttacks("gdpr").map((attack) => attack.lineId);
     const dutchGdprAttackIds = new RegulatorAI().getAttacks("gdpr").map((attack) => attack.lineIdNl);
+    const hardAttackIds = new RegulatorAI().getAttacks("dora", "hard").map((attack) => attack.lineId);
+    const dutchHardAttackIds = new RegulatorAI().getAttacks("dora", "hard").map((attack) => attack.lineIdNl);
 
     expect(attackIds.every((lineId) => manifestIds.has(lineId))).toBe(true);
     expect(dutchAttackIds.every((lineId) => manifestIds.has(lineId))).toBe(true);
     expect(gdprAttackIds.every((lineId) => manifestIds.has(lineId))).toBe(true);
     expect(dutchGdprAttackIds.every((lineId) => manifestIds.has(lineId))).toBe(true);
+    expect(hardAttackIds.every((lineId) => manifestIds.has(lineId))).toBe(true);
+    expect(dutchHardAttackIds.every((lineId) => manifestIds.has(lineId))).toBe(true);
   });
 
   it("contains the legal counsel response line", () => {
