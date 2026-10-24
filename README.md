@@ -10,6 +10,16 @@ A browser-based card roguelike where you play as a FinTech CTO defending against
 
 https://dora-roguelike.vercel.app
 
+## How to Play
+
+You are the CTO. Each round the Regulator raises an audit finding that damages one or more of your five compliance indicators: **ICT risk, incidents, third-party, testing and reporting**. You have **15 seconds** to play a card from your hand (real DORA, NIS2 and GDPR controls such as *DORA Art.9 Patch* or *Third-Party Register*) to defend or repair.
+
+- Survive all **15 rounds**, including the **Grand Regulator** boss phase, to win.
+- If any indicator drops to **0**, you lose.
+- The Regulator's dialogue, music and sound effects react to how the round is going.
+
+Play it at https://dora-roguelike.vercel.app, or run it locally (below).
+
 ## Built With
 
 - Vanilla TypeScript
@@ -79,3 +89,56 @@ npm run generate:audio -- --kind=music
 ```
 
 Generated MP3 files are written to `public/audio/` and preloaded before the tap-to-start screen.
+
+## Environment Variables
+
+Copy `.env.example` to `.env`. Only the audio generator uses these (they are not needed to play).
+
+| Variable | Description |
+|---|---|
+| `ELEVENLABS_API_KEY` | API key used by `npm run generate:audio` |
+| `VITE_DEBUG_SKIP_AUDIO` | `true` skips loading audio files (development only) |
+| `REGULATOR_VOICE_ID` | ElevenLabs voice for the Regulator |
+| `GRAND_REGULATOR_VOICE_ID` | Voice for the boss |
+| `LAWYER_VOICE_ID` | Voice for the Legal Counsel card |
+| `ELEVENLABS_TTS_MODEL_ID` | TTS model, default `eleven_multilingual_v2` |
+
+## Scripts
+
+| Command | What it does |
+|---|---|
+| `npm run dev` | Vite dev server with hot reload |
+| `npm run build` | Type-check and production build to `dist/` |
+| `npm run preview` | Serve the production build |
+| `npm test` | Unit tests |
+| `npm run generate:audio -- --kind=<kind>` | Generate ElevenLabs audio (`tts`, `tts-nl`, `tts-gdpr`, `tts-hard`, `sfx`, `music`) |
+
+## Project Structure
+
+```
+src/
+├── main.ts, config.ts       Entry point; constants (rounds, timer, indicators, colours)
+├── game/                    Rules: GameState, CardDeck, ComplianceBoard, RegulatorAI, TurnTimer, CoopMode, DebugActions
+├── scenes/                  Loading, Menu, Game, Boss, Victory, Defeat
+├── ui/                      Canvas renderers: board, cards, HUD, Regulator
+└── audio/                   Audio cache, ElevenLabs manifest, adaptive MusicDirector
+scripts/generate-audio.mjs   Pre-generates TTS, SFX and music into public/audio/
+tests/                       Unit tests for the game rules, audio and renderers
+```
+
+## Docker
+
+```bash
+docker build -t dora-roguelike .
+docker run -p 8080:80 dora-roguelike     # http://localhost:8080
+```
+
+The image builds the game with Node and serves the static output with Nginx.
+
+## Continuous Integration
+
+GitHub Actions (`.github/workflows/ci.yml`) runs `npm ci`, `npm test` and `npm run build` on every push and pull request.
+
+## Contributing
+
+New regulatory cards, Regulator lines with real article references, localisations and difficulty modes are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) and [CHANGELOG.md](CHANGELOG.md).
